@@ -27,7 +27,7 @@ load_rc_config ${name}
 start_precmd=nats_start_precmd
 
 pidfile="/var/run/${name}.pid"
-procname=%%PREFIX%%/bin/nats-server
+procname=/usr/local/bin/nats-server
 command=/usr/sbin/daemon
 command_args="-p ${pidfile} ${procname} ${nats_options}"
 

@@ -29,7 +29,7 @@ CMD pw useradd -n "${NATS_USER}" -g "${NATS_GROUP}" -s /usr/sbin/nologin -w no
 
 # download and install nats server
 CMD "${GO}" install "github.com/nats-io/nats-server/v2@${NATS_VERSION}"
-CMD "${INSTALL}" -o "${NATS_USER}" -g "${NATS_GROUP}" "${GOPATH}/bin/nats-server" /usr/local/sbin/nats-server
+CMD "${INSTALL}" -o "${NATS_USER}" -g "${NATS_GROUP}" "${GOPATH}/bin/nats-server" /usr/local/bin/nats-server
 
 # copy files
 CP usr /
