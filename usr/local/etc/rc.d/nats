@@ -1,0 +1,45 @@
+#!/bin/sh
+# PROVIDE: nats
+# REQUIRE: DAEMON
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name="nats"
+rcvar="nats_enable"
+
+command="/usr/local/sbin/nats-server"
+command_args="-P /var/run/nats.pid -c /usr/local/etc/nats.conf"
+pidfile="/var/run/nats.pid"
+extra_commands="reload"
+
+start_cmd="nats_start"
+
+nats_start() {
+    nohup $command $command_args > /dev/null 2>&1 &
+}
+
+reload_cmd="nats_reload"
+
+nats_reload() {
+    if [ -f "$pidfile" ]; then
+       	$command --signal reload 
+    else
+        echo "$name is not running."
+    fi
+}
+
+stop_cmd="nats_stop"
+
+nats_stop() {
+    if [ -f "$pidfile" ]; then
+        kill $(cat $pidfile)
+        rm -f $pidfile
+    else
+        echo "$name is not running."
+    fi
+}
+
+load_rc_config $name
+run_rc_command "$1"
+

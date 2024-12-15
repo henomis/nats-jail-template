@@ -1,0 +1,32 @@
+########################################################################################
+# Copyright (c) 2024, Simone Vellei. All rights reserved.
+#
+# Licenced under a 3-Clause BSD License (https://opensource.org/license/bsd-3-clause).
+#
+# Contact:
+# > e-mail      henomis@gmail.com 
+# > GitHub      henomis
+########################################################################################
+
+# install required packages
+PKG curl
+
+# general variables
+ARG UNZIP=/usr/bin/unzip
+ARG CURL=/usr/local/bin/curl
+
+# specific variables
+ARG NATS_DOWNLOAD=https://github.com/nats-io/nats-server/releases/download/v2.10.23/nats-server-v2.10.23-freebsd-amd64.zip 
+
+# download and install nats server
+CMD "${CURL}" -L "${NATS_DOWNLOAD}" --output /tmp/nats-server.zip
+CMD "${UNZIP}" -o /tmp/nats-server.zip -d /tmp
+CMD cp /tmp/nats-server-v2.10.23-freebsd-amd64/nats-server /usr/local/sbin/nats-server
+
+# copy files
+CP usr /
+CMD chmod a+x /usr/local/etc/rc.d/nats
+
+# enable and start nats
+SYSRC nats_enable=YES
+SERVICE nats start
