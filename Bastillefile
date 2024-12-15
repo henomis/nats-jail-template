@@ -37,4 +37,6 @@ CMD chmod a+x /usr/local/etc/rc.d/nats
 
 # enable and start nats
 SYSRC nats_enable=YES
+SYSRC nats_user="${NATS_USER}"
+SYSRC nats_group="${NATS_GROUP}"
 SERVICE nats start
