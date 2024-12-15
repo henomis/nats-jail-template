@@ -13,7 +13,7 @@ PKG git
 PKG go
 
 # general variables
-ARG GO=/usr/local/go/bin/go
+ARG GO=/usr/local/bin/go
 ARG GOPATH=/root/go
 ARG INSTALL=/usr/bin/install
 
