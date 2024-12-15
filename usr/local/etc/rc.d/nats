@@ -22,7 +22,7 @@ load_rc_config ${name}
 : ${nats_enable:=NO}
 : ${nats_user:=nats}
 : ${nats_group:=nats}
-: ${nats_options="-c %%PREFIX%%/etc/nats.conf"}
+: ${nats_options="-c /usr/local/etc/nats.conf"}
 
 start_precmd=nats_start_precmd
 
