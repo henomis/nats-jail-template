@@ -9,19 +9,27 @@
 ########################################################################################
 
 # install required packages
-PKG curl
+PKG git
+PKG go
 
 # general variables
-ARG UNZIP=/usr/bin/unzip
-ARG CURL=/usr/local/bin/curl
+ARG GO=/usr/local/go/bin/go
+ARG GOPATH=/root/go
+ARG INSTALL=/usr/bin/install
 
 # specific variables
-ARG NATS_DOWNLOAD=https://github.com/nats-io/nats-server/releases/download/v2.10.23/nats-server-v2.10.23-freebsd-amd64.zip 
+ARG NATS_VERSION=latest
+ARG NATS_USER=nats
+ARG NATS_GROUP=nats
+
+# create default group
+CMD pw groupadd "${NATS_GROUP}"
+# create default user
+CMD pw useradd -n "${NATS_USER}" -g "${NATS_GROUP}" -s /usr/sbin/nologin -w no
 
 # download and install nats server
-CMD "${CURL}" -L "${NATS_DOWNLOAD}" --output /tmp/nats-server.zip
-CMD "${UNZIP}" -o /tmp/nats-server.zip -d /tmp
-CMD cp /tmp/nats-server-v2.10.23-freebsd-amd64/nats-server /usr/local/sbin/nats-server
+CMD "${GO}" install "github.com/nats-io/nats-server/v2@${NATS_VERSION}"
+CMD "${INSTALL}" -o "${NATS_USER}" -g "${NATS_GROUP}" "${GOPATH}/bin/nats-server" /usr/local/sbin/nats-server
 
 # copy files
 CP usr /

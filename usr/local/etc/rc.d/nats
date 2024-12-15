@@ -1,45 +1,44 @@
 #!/bin/sh
+#
 # PROVIDE: nats
 # REQUIRE: DAEMON
 # KEYWORD: shutdown
+#
+# Add the following lines to /etc/rc.conf to run NATS:
+#
+# nats_enable (bool):	Set it to "YES" to enable nats server. Default is "NO".
+# nats_user:			User name to run as. default "nats"
+# nats_group:			Group name to run as. default "nats"
+# nats_options:			Options to pass nats server
+#
 
 . /etc/rc.subr
 
-name="nats"
-rcvar="nats_enable"
+name=nats
+rcvar=`set_rcvar`
 
-command="/usr/local/sbin/nats-server"
-command_args="-P /var/run/nats.pid -c /usr/local/etc/nats.conf"
-pidfile="/var/run/nats.pid"
-extra_commands="reload"
+load_rc_config ${name}
 
-start_cmd="nats_start"
+: ${nats_enable:=NO}
+: ${nats_user:=nats}
+: ${nats_group:=nats}
+: ${nats_options="-c %%PREFIX%%/etc/nats.conf"}
 
-nats_start() {
-    nohup $command $command_args > /dev/null 2>&1 &
+start_precmd=nats_start_precmd
+
+pidfile="/var/run/${name}.pid"
+procname=%%PREFIX%%/bin/nats-server
+command=/usr/sbin/daemon
+command_args="-p ${pidfile} ${procname} ${nats_options}"
+
+extra_commands="logrotate ldm reload"
+logrotate_cmd="${procname} --signal reopen=${pidfile}"
+ldm_cmd="${procname} --signal ldm=${pidfile}"
+reload_cmd="${procname} --signal reload"
+
+nats_start_precmd()
+{
+    install -o ${nats_user} -g ${nats_group} /dev/null ${pidfile}
 }
 
-reload_cmd="nats_reload"
-
-nats_reload() {
-    if [ -f "$pidfile" ]; then
-       	$command --signal reload 
-    else
-        echo "$name is not running."
-    fi
-}
-
-stop_cmd="nats_stop"
-
-nats_stop() {
-    if [ -f "$pidfile" ]; then
-        kill $(cat $pidfile)
-        rm -f $pidfile
-    else
-        echo "$name is not running."
-    fi
-}
-
-load_rc_config $name
 run_rc_command "$1"
-
